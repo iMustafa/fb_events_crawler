@@ -6,6 +6,8 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
+from pyvirtualdisplay import Display
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 import csv
@@ -29,9 +31,24 @@ def main(_username,
 		pagination_threshold=100):
 	
 	selected_date = datetime(year, month, day)
-	browser = webdriver.Chrome()
+
+	userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'
+	options = Options()
+	options.add_argument(f"user-agent={userAgent}")
+	options.add_argument("--headless")
+
+	browser = webdriver.Chrome(options=options )
+	##########################################
+	# chrome driver
+	# chrome_options = webdriver.ChromeOptions()
+	# chrome_options.add_argument('--headless')
+	# chrome_options.add_argument('--no-sandbox') # required when running as root user. otherwise you would get no sandbox errors. 
+	# browser = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options,
+	# 	# service_args=['--verbose', '--log-path=/tmp/chromedriver.log']
+	# )
+
 	try:
-		browser.maximize_window()
+		# browser.maximize_window()
 		browser.get("http://facebook.com")
 
 		username = browser.find_element_by_id("email")
@@ -70,7 +87,7 @@ def main(_username,
 				browser.implicitly_wait(5)
 
 				single_event = browser.find_element_by_xpath('//ul[@class="uiList _4kg _6-i _6-h _6-j"]//li[last()]').get_attribute('innerHTML').strip()
-
+				print(single_event)
 				# single_event = WebDriverWait(browser, 3).until(
 				# 	EC.presence_of_element_located((By.XPATH, xpath_pattern))
 
@@ -150,19 +167,3 @@ def main(_username,
 		browser.quit()
 		print(events)
 		return events
-
-if __name__ == '__main__':
-	_creds = ['uknano2019@gmail.com', '159753@asd']
-	city_id = '115351105145884'
-	y = 2020
-	m = 4
-	d = 11
-	pag_thrld = 100
-
-	main(_username=_creds[0],
-			_password=_creds[1],
-			city_id=city_id,
-			year=y,
-			month=m,
-			day=d,
-			pagination_threshold=pag_thrld)
