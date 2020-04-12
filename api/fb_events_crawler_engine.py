@@ -34,7 +34,7 @@ def main(_username,
 
 	userAgent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.92 Safari/537.36'
 	options = Options()
-	options.add_argument(f"user-agent={userAgent}")
+	options.add_argument('user-agent='+userAgent)
 	options.add_argument("--headless")
 
 	browser = webdriver.Chrome(options=options )
