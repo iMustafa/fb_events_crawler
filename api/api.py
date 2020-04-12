@@ -2,11 +2,13 @@ import flask
 from flask import request, jsonify
 import json
 import csv
+from flask_cors import CORS
 
 from fb_events_crawler_engine import main
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+CORS(app)
 
 @app.route('/', methods=['GET'])
 def home():
@@ -40,7 +42,7 @@ def api_start_crawler():
 		pag_thrld = int(request.args["pagination"])
 	except:
 		# max pagination_threshold value
-		pag_thrld = 100
+		pag_thrld = 1000
 
 
 	# fetch credentials 
@@ -76,9 +78,6 @@ def api_start_crawler():
 			pagination_threshold=pag_thrld)
 		
 		# wite last output to the disk
-		with open('events.csv', 'w') as f:
-			wr = csv.writer(f, quoting=csv.QUOTE_ALL)
-			wr.writerow(output)
 	finally:
 		return jsonify(output) 
 

@@ -1,0 +1,3 @@
+client/node_modules
+client/.next
+api/__pycache__
