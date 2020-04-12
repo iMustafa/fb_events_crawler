@@ -36,7 +36,7 @@ def main(_username,
 	options = Options()
 	options.add_argument('user-agent='+userAgent)
 	options.add_argument("--headless")
-
+	options.add_argument("--no-sandbox")
 	browser = webdriver.Chrome(options=options )
 	##########################################
 	# chrome driver
@@ -167,3 +167,7 @@ def main(_username,
 		browser.quit()
 		print(events)
 		return events
+
+
+#if __name__ == '__main__':
+	
