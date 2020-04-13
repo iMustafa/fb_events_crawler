@@ -10,7 +10,9 @@ import {
 import FormControl from '@material-ui/core/FormControl'
 import Select from '@material-ui/core/Select'
 import Button from '@material-ui/core/Button'
-import Search from '../actions/search.actions'
+import LinearProgress from '@material-ui/core/LinearProgress'
+import router from 'next/router'
+import moment from 'moment'
 
 const useStyles = makeStyles({
   topBar: {
@@ -41,24 +43,66 @@ const useStyles = makeStyles({
   }
 })
 
+const cities = {
+  'United Kingdom': ['London'],
+  'Bolivia': ['La Paz'],
+  'China': ['Shanghai'],
+  'Argentina': ['San Juan'],
+  'Thailand': ['Chiang Mai', 'Bangkok', 'Phuket'],
+  'Maharashtra': ['Mumbai'],
+  'Poland': ['Gdansk'],
+  'Chad': ["N'Djamena"],
+  'Indonesia': ['Surabaya'],
+  'Turkey': ['Istanbul'],
+  'Vietnam': ['Da Nang'],
+  'Yemen': ['Sanaa'],
+  'Egypt': ['Cairo', 'Tanta']
+}
+const countries = Object.keys(cities)
+
 const HomePage = () => {
   const classes = useStyles()
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [state, setState] = useState({
     country: 'Egypt',
     city: 'Cairo',
-    y: 2020,
-    m: 4,
-    d: 9
+    y: moment().year(),
+    m: moment().month() + 1,
+    d: moment().date(),
+    isLoading: false
   })
 
-  const submitSearch = async () => {
-    try {
-      const results = await Search(state)
-      console.log(results)
-    } catch (e) {
-      console.log(e)
+  const submitSearch = () => {
+    const { country, city, y, m, d } = state
+    if (country && city && y && m && d) {
+      setState({ ...state, isLoading: true })
+      router.push({
+        pathname: '/results',
+        query: { country, city, y, m, d }
+      })
     }
   }
+
+  const handleDateChange = (date) => {
+    const d = date.day()
+    const m = date.month()
+    const y = date.year()
+    setState({ ...state, d, m, y })
+    setSelectedDate(date)
+  }
+
+  const handleChange = (event) => {
+    const { name, value } = event.target
+    if (name == 'country') {
+      setState({
+        ...state, [name]: value, city: null
+      });
+    } else {
+      setState({
+        ...state, [name]: value
+      });
+    }
+  };
 
   return (
     <div className='container'>
@@ -72,10 +116,8 @@ const HomePage = () => {
         <div className={classes.form}>
           <FormControl variant="filled" style={{ backgroundColor: "#FFF", width: '40%' }}>
             <InputLabel>Country</InputLabel>
-            <Select value={10}>
-              <MenuItem value={10}>Egypt</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+            <Select value={state.country} onChange={handleChange} name='country'>
+              {countries.map(country => <MenuItem value={country} key={country}>{country}</MenuItem>)}
             </Select>
           </FormControl>
 
@@ -84,7 +126,9 @@ const HomePage = () => {
               style={{ backgroundColor: "#FFF", width: '40%', padding: 3 }}
               disableToolbar
               variant="inline"
-              format="MM/dd/yyyy"
+              format="DD/MM/YYYY"
+              onChange={handleDateChange}
+              value={selectedDate}
               id="date-picker-inline"
               label="Date"
               KeyboardButtonProps={{
@@ -95,16 +139,15 @@ const HomePage = () => {
 
           <FormControl variant="filled" style={{ backgroundColor: "#FFF", width: '40%' }}>
             <InputLabel>City</InputLabel>
-            <Select value={10}>
-              <MenuItem value={10}>Cairo</MenuItem>
-              <MenuItem value={20}>Twenty</MenuItem>
-              <MenuItem value={30}>Thirty</MenuItem>
+            <Select value={state.city} onChange={handleChange} name='city'>
+              {cities[state.country].map(city => <MenuItem value={city} key={city}>{city}</MenuItem>)}
             </Select>
           </FormControl>
 
-          <Button style={{ backgroundColor: "red", width: '40%', color: "#FFF" }} onClick={submitSearch}>Search</Button>
+          <Button disabled={state.isLoading} style={{ backgroundColor: "red", width: '40%', color: "#FFF" }} onClick={submitSearch}>Search</Button>
         </div>
       </div>
+      {state.isLoading && <LinearProgress />}
       <div className={classes.topBar}></div>
     </div>
   )

@@ -7,6 +7,7 @@ module.exports = withImages({
     return config;
   },
   publicRuntimeConfig: {
-    API_URL: 'http://207.246.101.15:5000/api/v1'
+    API_URL: 'http://207.246.101.15:5000/api/v1',
+    // API_URL: 'http://localhost:5000/api/v1',
   }
 });
